@@ -98,10 +98,7 @@ configure() {
 	return 0
 }
 
-build() {
-	# shellcheck disable=SC2039
-	local modargs pattern targets retval
-
+prebuild() {
 	cd "$GO_BUILD_DIR" || return 1
 
 	if [ -f "$BUILD_DIR/go.mod" ] ; then
@@ -129,11 +126,11 @@ build() {
 		return 0
 	fi
 
-	log "Building targets"
 	mkdir -p "$GO_BUILD_DIR/bin" "$GO_BUILD_CACHE_DIR"
-	# shellcheck disable=SC2086
-	go install $modargs "$@" $targets
-	retval="$?"
+}
+
+postbuild() {
+	retval="$1"
 	log
 
 	if [ "$retval" -eq 0 ] && [ -z "$(find "$GO_BUILD_BIN_DIR" -maxdepth 0 -type d -not -empty 2>/dev/null)" ]; then
@@ -144,8 +141,28 @@ build() {
 	if [ "$retval" -ne 0 ]; then
 		cache_cleanup
 	fi
+}
 
-	return "$retval"
+build() {
+	prebuild
+
+	log "Building targets"
+	# shellcheck disable=SC2086
+	go install $modargs "$@" $targets
+
+	postbuild "$?"
+	return $retval
+}
+
+build_plugin() {
+	prebuild
+
+	log "Building targets as plugin"
+	# shellcheck disable=SC2086
+	go build -buildmode=plugin -o $GO_BUILD_BIN_DIR/ $modargs "$@" $targets
+
+	postbuild "$?"
+	return $?
 }
 
 install_bin() {
@@ -153,6 +170,13 @@ install_bin() {
 	local dest="$1"
 	install -d -m0755 "$dest/$GO_INSTALL_BIN_PATH"
 	install -m0755 "$GO_BUILD_BIN_DIR"/* "$dest/$GO_INSTALL_BIN_PATH/"
+}
+
+install_plugin() {
+	# shellcheck disable=SC2039
+	local dest="$1"
+	install -d -m0755 "$dest/$GO_INSTALL_BIN_PATH"
+	install -m0644 "$GO_BUILD_BIN_DIR"/* "$dest/$GO_INSTALL_BIN_PATH/"
 }
 
 install_src() {
@@ -194,8 +218,14 @@ case "$command" in
 	build)
 		build "$@"
 		;;
+	build_plugin)
+		build_plugin "$@"
+		;;
 	install_bin)
 		install_bin "$@"
+		;;
+	install_plugin)
+		install_plugin "$@"
 		;;
 	install_src)
 		install_src "$@"

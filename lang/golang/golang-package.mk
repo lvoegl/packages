@@ -266,8 +266,18 @@ define GoPackage/Build/Compile
 	$(SHELL) $(GO_INCLUDE_DIR)/golang-build.sh build $(GO_PKG_INSTALL_ARGS) $(1)
 endef
 
+define GoPackage/Build/Compile/Plugin
+	$(GO_GENERAL_BUILD_CONFIG_VARS) \
+	$(GO_PKG_BUILD_CONFIG_VARS) \
+	$(SHELL) $(GO_INCLUDE_DIR)/golang-build.sh build_plugin $(GO_PKG_INSTALL_ARGS) $(1)
+endef
+
 define GoPackage/Build/InstallDev
 	$(call GoPackage/Package/Install/Src,$(1))
+endef
+
+define GoPackage/Build/InstallDev/Plugin
+	$(call GoPackage/Package/Install/Plugin,$(1))
 endef
 
 define GoPackage/Package/Install/Bin
@@ -280,6 +290,12 @@ define GoPackage/Package/Install/Src
 	$(GO_GENERAL_BUILD_CONFIG_VARS) \
 	$(GO_PKG_BUILD_CONFIG_VARS) \
 	$(SHELL) $(GO_INCLUDE_DIR)/golang-build.sh install_src "$(1)"
+endef
+
+define GoPackage/Package/Install/Plugin
+	$(GO_GENERAL_BUILD_CONFIG_VARS) \
+	$(GO_PKG_BUILD_CONFIG_VARS) \
+	$(SHELL) $(GO_INCLUDE_DIR)/golang-build.sh install_plugin "$(1)"
 endef
 
 define GoPackage/Package/Install
