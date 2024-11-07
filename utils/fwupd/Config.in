@@ -33,7 +33,7 @@ config FWUPD_LZMA
 
 config FWUPD_CURL
 	bool "curl"
-	default n
+	default y
 	help
 	  Compile fwupd with curl support
 
