@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fwupd
-PKG_VERSION:=2.0.0
+PKG_VERSION:=2.0.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://github.com/fwupd/fwupd/releases/download/$(PKG_VERSION)
-PKG_HASH:=60a62b850e2c3a818f3178cb1de0f632b1e04c6ab07c02483af398940713548a
+PKG_HASH:=04226d0c689a56cc51de017e736f18f1f5e951b9a7c1b18e3281eb923c435891
 
 PKG_MAINTAINER:=Lukas Voegl <lvoegl@tdt.de>
 PKG_LICENSE:=LGPL-2.1-or-later
@@ -113,6 +113,7 @@ MESON_ARGS += \
 	-Dgnutls=disabled \
 	-Dpassim=disabled \
 	-Dsqlite=disabled \
+	-Dlibdrm=disabled \
 	-Dudev=enabled \
 	-Dplugin_acpi_phat=disabled \
 	-Dplugin_amdgpu=disabled \
